@@ -31,6 +31,7 @@ function main(argv, callback) {
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
+      'P:(base-port)',
     ].join(''),
     argv);
 
@@ -38,6 +39,7 @@ function main(argv, callback) {
   var listen = 8701;
   var control = 'pmctl';
   var driver = DRIVERS.direct;
+  var basePort = Number(process.env.STRONGLOOP_BASEPORT) || 3000;
 
   var option;
   while ((option = parser.getopt()) !== undefined) {
@@ -65,6 +67,9 @@ function main(argv, callback) {
         break;
       case 'N':
         control = undefined;
+        break;
+      case 'P':
+        basePort = option.optarg;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -97,15 +102,18 @@ function main(argv, callback) {
   var app = new Server({
     // Choose driver based on cli options/env once we have alternate drivers.
     Driver: driver,
-    cmdName: $0,
+    appBasePort: basePort,
     baseDir: base,
-    listenPort: listen,
+    cmdName: $0,
     controlPath: control,
+    listenPort: listen,
   });
 
   app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`, driver is `%s`',
       $0, listenAddr.port, base, app.getDriverInfo().type);
+    console.log('%s: applications will run on port %d + service ID',
+      $0, basePort);
   });
 
   app.start();
