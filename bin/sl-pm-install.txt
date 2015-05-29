@@ -9,6 +9,7 @@ Options:
                       applications.
   -b,--base BASE      Base directory to work in (default is $HOME of the user
                       that manager is run as, see --user).
+  -P,--base-port PORT Applications will run at PORT + service ID (default 3000).
   -d,--driver DRIVER  Specify application execution driver. May be  direct or
                       docker (default is direct).
   -e,--set-env K=V... Initial application environment variables. If setting
